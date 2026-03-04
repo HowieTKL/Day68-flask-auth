@@ -73,12 +73,12 @@ def login():
     if request.method == 'POST':
         result = db.session.execute(db.select(User).where(User.email == request.form['email']))
         user = result.scalar()
-        if check_password_hash(user.password, request.form['password']):
+        if user and check_password_hash(user.password, request.form['password']):
             login_user(user)
             print("login success")
             return redirect(url_for("secrets"))
         else:
-            error = "Invalid Credentials - please try again."
+            error = "Invalid credentials - please try again."
             return render_template("login.html", error=error)
     return render_template("login.html", logged_in=current_user.is_authenticated)
 
