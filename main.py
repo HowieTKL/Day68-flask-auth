@@ -43,7 +43,9 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    return render_template("index.html")
+    if current_user.is_authenticated:
+        return redirect(url_for("secrets"))
+    return render_template("index.html", logged_in=current_user.is_authenticated)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -61,14 +63,13 @@ def register():
                         name=request.form['name'])
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for("secrets", name=new_user.name))
+        login_user(new_user)
+        return redirect(url_for("secrets"))
     return render_template("register.html")
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated:
-        return redirect(url_for("secrets"))
     if request.method == 'POST':
         result = db.session.execute(db.select(User).where(User.email == request.form['email']))
         user = result.scalar()
@@ -79,12 +80,12 @@ def login():
         else:
             error = "Invalid Credentials - please try again."
             return render_template("login.html", error=error)
-    return render_template("login.html")
+    return render_template("login.html", logged_in=current_user.is_authenticated)
 
 @app.route('/secrets')
 @login_required
 def secrets():
-    return render_template("secrets.html", name=current_user.name)
+    return render_template("secrets.html", name=current_user.name, logged_in=current_user.is_authenticated)
 
 
 @app.route('/logout')
