@@ -45,7 +45,7 @@ def load_user(user_id):
 def home():
     if current_user.is_authenticated:
         return redirect(url_for("secrets"))
-    return render_template("index.html", logged_in=current_user.is_authenticated)
+    return render_template("index.html")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -80,12 +80,12 @@ def login():
         else:
             error = "Invalid credentials - please try again."
             return render_template("login.html", error=error)
-    return render_template("login.html", logged_in=current_user.is_authenticated)
+    return render_template("login.html")
 
 @app.route('/secrets')
 @login_required
 def secrets():
-    return render_template("secrets.html", name=current_user.name, logged_in=current_user.is_authenticated)
+    return render_template("secrets.html")
 
 
 @app.route('/logout')
